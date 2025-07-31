@@ -1,5 +1,4 @@
 // flipcheck-frontend/components/EbayListings.js
-'use client';
 import { useEffect, useState } from 'react';
 
 export default function EbayListings() {
@@ -17,7 +16,7 @@ export default function EbayListings() {
       const res = await fetch(`/api/ebay?q=${encodeURIComponent(query)}`);
       
       if (!res.ok) {
-        throw new Error(`API failed with status: ${res.status}`);
+        throw new Error(`API failed with status: ${res.status} - ${res.statusText}`);
       }
       
       const data = await res.json();
@@ -25,7 +24,9 @@ export default function EbayListings() {
       setListings(data);
     } catch (err) {
       console.error('Error fetching listings:', err);
-      setError(err.message);
+      setError(`Failed to load listings: ${err.message}`);
+      // Set empty array to prevent UI issues
+      setListings([]);
     } finally {
       setLoading(false);
     }
@@ -42,26 +43,58 @@ export default function EbayListings() {
     }
   };
 
+  const handleRetry = () => {
+    fetchListings();
+  };
+
   if (loading) {
     return (
-      <div className="text-center py-8">
-        <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-        <p className="mt-2 text-gray-600">Loading eBay listings...</p>
+      <div style={{ textAlign: 'center', padding: '40px' }}>
+        <div style={{
+          display: 'inline-block',
+          width: '32px',
+          height: '32px',
+          border: '4px solid #f3f3f3',
+          borderTop: '4px solid #3498db',
+          borderRadius: '50%',
+          animation: 'spin 1s linear infinite'
+        }}></div>
+        <p style={{ marginTop: '10px', color: '#666' }}>Loading eBay listings...</p>
+        <style jsx>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-8">
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
-          <h3 className="text-red-800 font-semibold">Error Loading Listings</h3>
-          <p className="text-red-600 mt-1">{error}</p>
+      <div style={{ textAlign: 'center', padding: '40px' }}>
+        <div style={{
+          backgroundColor: '#fff5f5',
+          border: '1px solid #fed7d7',
+          borderRadius: '8px',
+          padding: '20px',
+          marginBottom: '20px'
+        }}>
+          <h3 style={{ color: '#c53030', marginTop: '0' }}>⚠️ Error Loading Listings</h3>
+          <p style={{ color: '#742a2a', margin: '10px 0' }}>{error}</p>
           <button 
-            onClick={() => fetchListings()}
-            className="mt-3 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+            onClick={handleRetry}
+            style={{
+              marginTop: '15px',
+              backgroundColor: '#c53030',
+              color: 'white',
+              padding: '10px 20px',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer'
+            }}
           >
-            Retry
+            🔄 Retry
           </button>
         </div>
       </div>
@@ -69,81 +102,166 @@ export default function EbayListings() {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Live eBay Listings</h2>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+      <div style={{ marginBottom: '30px' }}>
+        <h2 style={{ fontSize: '28px', fontWeight: 'bold', color: '#2d3748', marginBottom: '20px' }}>
+          Live eBay Listings
+        </h2>
         
         {/* Search Form */}
-        <form onSubmit={handleSearch} className="mb-4">
-          <div className="flex gap-2">
+        <form onSubmit={handleSearch} style={{ marginBottom: '20px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search eBay listings..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              style={{
+                flex: '1',
+                minWidth: '250px',
+                padding: '12px 16px',
+                border: '1px solid #d1d5db',
+                borderRadius: '8px',
+                fontSize: '16px'
+              }}
             />
             <button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              style={{
+                backgroundColor: '#3b82f6',
+                color: 'white',
+                padding: '12px 24px',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                fontSize: '16px',
+                opacity: loading ? 0.5 : 1
+              }}
             >
               Search
             </button>
           </div>
         </form>
 
-        <div className="flex justify-between items-center">
-          <p className="text-gray-600">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap' }}>
+          <p style={{ color: '#6b7280', margin: '0' }}>
             Found {listings.length} listings
           </p>
           <button 
-            onClick={() => fetchListings()}
+            onClick={handleRetry}
             disabled={loading}
-            className="text-blue-600 hover:text-blue-800 disabled:opacity-50"
+            style={{
+              color: '#3b82f6',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              opacity: loading ? 0.5 : 1
+            }}
           >
-            Refresh
+            🔄 Refresh
           </button>
         </div>
       </div>
 
       {listings.length === 0 ? (
-        <div className="text-center py-8 text-gray-500">
-          No listings found. Try a different search term.
+        <div style={{ textAlign: 'center', padding: '40px', color: '#6b7280' }}>
+          <p style={{ fontSize: '18px' }}>No listings found. Try a different search term.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))',
+          gap: '24px'
+        }}>
           {listings.map((item) => (
-            <div key={item.id} className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <div key={item.id} style={{
+              backgroundColor: 'white',
+              border: '1px solid #e5e7eb',
+              borderRadius: '12px',
+              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+              transition: 'box-shadow 0.2s',
+              overflow: 'hidden'
+            }}>
               {item.image && (
                 <img 
                   src={item.image} 
                   alt={item.title}
-                  className="w-full h-48 object-cover rounded-t-lg"
+                  style={{
+                    width: '100%',
+                    height: '200px',
+                    objectFit: 'cover'
+                  }}
                 />
               )}
-              <div className="p-4">
-                <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+              <div style={{ padding: '20px' }}>
+                <h3 style={{
+                  fontWeight: '600',
+                  color: '#1f2937',
+                  marginBottom: '12px',
+                  fontSize: '16px',
+                  lineHeight: '1.4',
+                  height: '3.2em',
+                  overflow: 'hidden',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical'
+                }}>
                   {item.title}
                 </h3>
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-2xl font-bold text-green-600">
+                
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                  <span style={{
+                    fontSize: '24px',
+                    fontWeight: 'bold',
+                    color: '#059669'
+                  }}>
                     ${item.price}
                   </span>
                   {item.condition && (
-                    <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+                    <span style={{
+                      fontSize: '12px',
+                      color: '#6b7280',
+                      backgroundColor: '#f3f4f6',
+                      padding: '4px 8px',
+                      borderRadius: '4px'
+                    }}>
                       {item.condition}
                     </span>
                   )}
                 </div>
+                
                 {item.shipping && (
-                  <p className="text-sm text-gray-600 mb-3">{item.shipping}</p>
+                  <p style={{ fontSize: '14px', color: '#6b7280', marginBottom: '16px' }}>
+                    📦 {item.shipping}
+                  </p>
                 )}
+                
+                {(item.bids || item.timeLeft) && (
+                  <div style={{ fontSize: '12px', color: '#6b7280', marginBottom: '16px' }}>
+                    {item.bids && <span>🔥 {item.bids} bids</span>}
+                    {item.bids && item.timeLeft && <span> • </span>}
+                    {item.timeLeft && <span>⏰ {item.timeLeft}</span>}
+                  </div>
+                )}
+                
                 <a 
                   href={item.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    textAlign: 'center',
+                    backgroundColor: '#3b82f6',
+                    color: 'white',
+                    padding: '12px',
+                    borderRadius: '8px',
+                    textDecoration: 'none',
+                    fontSize: '14px',
+                    fontWeight: '500'
+                  }}
                 >
                   View on eBay
                 </a>

@@ -1,0 +1,123 @@
+{
+  "timestamp": "2025-07-31T20:52:24.977Z",
+  "uptime": 40804,
+  "healthChecks": [
+    {
+      "timestamp": "2025-07-31T20:51:54.980Z",
+      "results": [
+        {
+          "name": "Main Page",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 319,
+          "passed": true,
+          "url": "/"
+        },
+        {
+          "name": "Dashboard",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 219,
+          "passed": true,
+          "url": "/dashboard"
+        },
+        {
+          "name": "eBay API Default",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 1949,
+          "passed": true,
+          "url": "/api/ebay"
+        },
+        {
+          "name": "eBay API Electronics",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 3085,
+          "passed": true,
+          "url": "/api/ebay?q=electronics"
+        },
+        {
+          "name": "eBay API Watches",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 2222,
+          "passed": true,
+          "url": "/api/ebay?q=watches"
+        },
+        {
+          "name": "Invalid API Method",
+          "status": 405,
+          "expected": 405,
+          "responseTime": 7,
+          "passed": true,
+          "url": "/api/ebay"
+        }
+      ],
+      "passed": 6,
+      "total": 6,
+      "successRate": "100.0"
+    }
+  ],
+  "errors": [],
+  "summary": {
+    "totalErrors": 0,
+    "lastHealthCheck": {
+      "timestamp": "2025-07-31T20:51:54.980Z",
+      "results": [
+        {
+          "name": "Main Page",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 319,
+          "passed": true,
+          "url": "/"
+        },
+        {
+          "name": "Dashboard",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 219,
+          "passed": true,
+          "url": "/dashboard"
+        },
+        {
+          "name": "eBay API Default",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 1949,
+          "passed": true,
+          "url": "/api/ebay"
+        },
+        {
+          "name": "eBay API Electronics",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 3085,
+          "passed": true,
+          "url": "/api/ebay?q=electronics"
+        },
+        {
+          "name": "eBay API Watches",
+          "status": 200,
+          "expected": 200,
+          "responseTime": 2222,
+          "passed": true,
+          "url": "/api/ebay?q=watches"
+        },
+        {
+          "name": "Invalid API Method",
+          "status": 405,
+          "expected": 405,
+          "responseTime": 7,
+          "passed": true,
+          "url": "/api/ebay"
+        }
+      ],
+      "passed": 6,
+      "total": 6,
+      "successRate": "100.0"
+    },
+    "systemStatus": "HEALTHY"
+  }
+}
