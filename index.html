@@ -1,0 +1,76 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FlipCheck Early Access</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>🚀 FlipCheck Early Access</h1>
+    <p class="subhead">Real-time pricing. Fraud protection. Instant offers. Limited beta users only.</p>
+
+    <h2>⏳ Time Left to Join:</h2>
+    <div id="countdown">Loading...</div>
+    <div id="expired" style="display: none;">❌ This offer has expired. Follow us for the next drop.</div>
+
+    <div class="typeform-container">
+      <h3>📱 Ready to Flip Smarter?</h3>
+      <p>Fill out the form below and we’ll send you early access.</p>
+      <iframe src="https://form.typeform.com/to/Hzn1VDLZ" allowfullscreen></iframe>
+    </div>
+
+    <div class="calculator">
+      <h3>💰 Profit Calculator</h3>
+      <label>Buy Price: $<input type="number" id="buyPrice" /></label><br />
+      <label>Sell Price: $<input type="number" id="sellPrice" /></label><br />
+      <label>Fees/Shipping: $<input type="number" id="fees" /></label><br />
+      <button onclick="calculateProfit()">Calculate</button>
+      <p id="profitResult"></p>
+    </div>
+  </div>
+
+  <script>
+    // Countdown Timer
+    window.addEventListener('DOMContentLoaded', () => {
+      const deadline = new Date("2025-08-10T23:59:59").getTime();
+      const countdownEl = document.getElementById("countdown");
+      const expiredEl = document.getElementById("expired");
+
+      function updateCountdown() {
+        const now = new Date().getTime();
+        const distance = deadline - now;
+
+        if (distance <= 0) {
+          countdownEl.style.display = "none";
+          expiredEl.style.display = "block";
+          clearInterval(interval);
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        countdownEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }
+
+      const interval = setInterval(updateCountdown, 1000);
+      updateCountdown();
+    });
+
+    // Profit Calculator Logic
+    function calculateProfit() {
+      const buy = parseFloat(document.getElementById("buyPrice").value) || 0;
+      const sell = parseFloat(document.getElementById("sellPrice").value) || 0;
+      const fees = parseFloat(document.getElementById("fees").value) || 0;
+      const profit = sell - buy - fees;
+
+      document.getElementById("profitResult").textContent = `Estimated Profit: $${profit.toFixed(2)}`;
+    }
+  </script>
+</body>
+</html>
