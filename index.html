@@ -6,98 +6,130 @@
   <title>FlipCheck Early Access</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #111;
+      background-color: #0a0a0a;
       color: #fff;
+      font-family: 'Segoe UI', sans-serif;
       text-align: center;
-      padding: 40px 20px;
+      padding: 2rem;
     }
-    h1 { font-size: 2em; margin-bottom: 0.2em; }
-    p { margin-bottom: 1em; }
-    .countdown, .profit-calc, .scamcheck { margin-top: 40px; }
-    input { padding: 6px 10px; border-radius: 5px; border: none; margin: 5px; width: 200px; }
-    button { padding: 6px 15px; border: none; background: #FFD700; color: black; border-radius: 5px; cursor: pointer; margin-top: 10px; }
-    iframe { width: 100%; height: 500px; border: none; border-radius: 8px; max-width: 600px; }
-    #result { margin-top: 15px; font-weight: bold; }
+
+    h1, h2 {
+      color: #f9f9f9;
+    }
+
+    .section {
+      margin: 2rem 0;
+      padding: 1rem;
+      background: #1a1a1a;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #00ffea50;
+    }
+
+    input, textarea, button {
+      padding: 0.6rem;
+      border: none;
+      border-radius: 5px;
+      margin-top: 0.5rem;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #00ffea;
+      color: #000;
+      cursor: pointer;
+    }
+
+    .scam-score {
+      margin-top: 0.5rem;
+      font-weight: bold;
+    }
+
+    iframe {
+      width: 100%;
+      max-width: 600px;
+      height: 600px;
+      border: none;
+      border-radius: 8px;
+    }
+
   </style>
 </head>
 <body>
-
   <h1>🚀 FlipCheck Early Access</h1>
   <p>Real-time pricing. Fraud protection. Instant offers. Limited beta users only</p>
 
-  <div class="countdown">
-    <h3>⏳ Time Left to Join:</h3>
-    <div id="countdown"></div>
+  <div class="section">
+    <h2>⏳ Time Left to Join:</h2>
+    <p id="countdown">Loading...</p>
+    <script>
+      const countdownEl = document.getElementById('countdown');
+      const futureDate = new Date();
+      futureDate.setDate(futureDate.getDate() + 7); // 7 days from now
+
+      setInterval(() => {
+        const now = new Date();
+        const distance = futureDate - now;
+        const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const h = Math.floor((distance / (1000 * 60 * 60)) % 24);
+        const m = Math.floor((distance / 1000 / 60) % 60);
+        const s = Math.floor((distance / 1000) % 60);
+        countdownEl.textContent = `${d}d ${h}h ${m}m ${s}s`;
+      }, 1000);
+    </script>
   </div>
 
-  <h3>📋 Ready to Flip Smarter?</h3>
-  <p>Fill out the form below and we’ll send you early access.</p>
+  <div class="section">
+    <h2>🧠 Ready to Flip Smarter?</h2>
+    <p>Fill out the form below and we’ll send you early access.</p>
+    <iframe src="https://form.typeform.com/to/HznlVDLZ" title="FlipCheck Waitlist"></iframe>
+  </div>
 
-  <iframe src="https://form.typeform.com/to/HznlVDLZ"></iframe>
-
-  <div class="profit-calc">
-    <h3>💰 Profit Calculator</h3>
+  <div class="section">
+    <h2>💰 Profit Calculator</h2>
     <label>Buy Price: $<input type="number" id="buyPrice" /></label><br/>
     <label>Sell Price: $<input type="number" id="sellPrice" /></label><br/>
-    <button onclick="calcProfit()">Calculate</button>
+    <button onclick="calculateProfit()">Calculate</button>
     <div id="profitResult"></div>
-  </div>
 
-  <div class="scamcheck">
-    <h3>🛡 ScamCheck™ (Beta)</h3>
-    <p>Copy/paste a marketplace listing or seller message and we’ll analyze the risk.</p>
-    <textarea id="scamInput" rows="5" cols="50" placeholder="Paste offer details here..."></textarea><br/>
-    <button onclick="runScamCheck()">Scan Now</button>
-    <div id="scamResult"></div>
-  </div>
-
-  <script>
-    // Countdown logic
-    const countdownDate = new Date("August 15, 2025 23:59:59").getTime();
-    const timer = setInterval(function () {
-      const now = new Date().getTime();
-      const distance = countdownDate - now;
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-      document.getElementById("countdown").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
-      if (distance < 0) {
-        clearInterval(timer);
-        document.getElementById("countdown").innerHTML = "Expired";
+    <script>
+      function calculateProfit() {
+        const buy = parseFloat(document.getElementById('buyPrice').value);
+        const sell = parseFloat(document.getElementById('sellPrice').value);
+        const profit = sell - buy;
+        document.getElementById('profitResult').textContent = isNaN(profit) ? 'Enter valid prices.' : `Profit: $${profit}`;
       }
-    }, 1000);
+    </script>
+  </div>
 
-    // Profit calculator
-    function calcProfit() {
-      const buy = parseFloat(document.getElementById("buyPrice").value) || 0;
-      const sell = parseFloat(document.getElementById("sellPrice").value) || 0;
-      const profit = sell - buy;
-      document.getElementById("profitResult").innerText = `Projected Profit: $${profit.toFixed(2)}`;
-    }
+  <div class="section">
+    <h2>🕵️ ScamCheck™ (Beta)</h2>
+    <p>Copy/paste a seller message or listing and we’ll analyze the risk.</p>
+    <textarea id="scamInput" rows="4" cols="50" placeholder="e.g., brand new iPhone sealed, $150 firm, can meet tonight..."></textarea><br/>
+    <button onclick="runScamCheck()">Scan Now</button>
+    <div class="scam-score" id="scamResult">Scam Score: --</div>
 
-    // ScamCheck (rules-based for now)
-    function runScamCheck() {
-      const input = document.getElementById("scamInput").value.toLowerCase();
-      let risk = 0;
-      const redFlags = [
-        { phrase: "zelle only", points: 30 },
-        { phrase: "won't meet", points: 25 },
-        { phrase: "no imei", points: 20 },
-        { phrase: "trust me", points: 15 },
-        { phrase: "paypal gift", points: 25 },
-        { phrase: "shipping only", points: 20 },
-      ];
-      redFlags.forEach(flag => {
-        if (input.includes(flag.phrase)) risk += flag.points;
-      });
-      let level = "✅ Low Risk";
-      if (risk > 70) level = "🚨 High Risk";
-      else if (risk > 40) level = "⚠️ Medium Risk";
-      document.getElementById("scamResult").innerText = `Scam Score: ${risk}/100 — ${level}`;
-    }
-  </script>
+    <script>
+      async function runScamCheck() {
+        const text = document.getElementById('scamInput').value.trim();
+        if (!text) return alert('Paste a message first.');
 
+        document.getElementById('scamResult').textContent = 'Analyzing...';
+
+        try {
+          const res = await fetch('/api/scamcheck', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: text })
+          });
+
+          const data = await res.json();
+          document.getElementById('scamResult').textContent =
+            `Scam Score: ${data.score}/100 — ${data.riskLevel}`;
+        } catch (err) {
+          document.getElementById('scamResult').textContent = 'Error analyzing message.';
+        }
+      }
+    </script>
+  </div>
 </body>
 </html>
