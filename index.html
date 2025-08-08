@@ -1,76 +1,103 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>FlipCheck Early Access</title>
-  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    h1 { font-size: 2em; margin-bottom: 0.2em; }
+    p { margin-bottom: 1em; }
+    .countdown, .profit-calc, .scamcheck { margin-top: 40px; }
+    input { padding: 6px 10px; border-radius: 5px; border: none; margin: 5px; width: 200px; }
+    button { padding: 6px 15px; border: none; background: #FFD700; color: black; border-radius: 5px; cursor: pointer; margin-top: 10px; }
+    iframe { width: 100%; height: 500px; border: none; border-radius: 8px; max-width: 600px; }
+    #result { margin-top: 15px; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🚀 FlipCheck Early Access</h1>
-    <p class="subhead">Real-time pricing. Fraud protection. Instant offers. Limited beta users only.</p>
 
-    <h2>⏳ Time Left to Join:</h2>
-    <div id="countdown">Loading...</div>
-    <div id="expired" style="display: none;">❌ This offer has expired. Follow us for the next drop.</div>
+  <h1>🚀 FlipCheck Early Access</h1>
+  <p>Real-time pricing. Fraud protection. Instant offers. Limited beta users only</p>
 
-    <div class="typeform-container">
-      <h3>📱 Ready to Flip Smarter?</h3>
-      <p>Fill out the form below and we’ll send you early access.</p>
-      <iframe src="https://form.typeform.com/to/Hzn1VDLZ" allowfullscreen></iframe>
-    </div>
+  <div class="countdown">
+    <h3>⏳ Time Left to Join:</h3>
+    <div id="countdown"></div>
+  </div>
 
-    <div class="calculator">
-      <h3>💰 Profit Calculator</h3>
-      <label>Buy Price: $<input type="number" id="buyPrice" /></label><br />
-      <label>Sell Price: $<input type="number" id="sellPrice" /></label><br />
-      <label>Fees/Shipping: $<input type="number" id="fees" /></label><br />
-      <button onclick="calculateProfit()">Calculate</button>
-      <p id="profitResult"></p>
-    </div>
+  <h3>📋 Ready to Flip Smarter?</h3>
+  <p>Fill out the form below and we’ll send you early access.</p>
+
+  <iframe src="https://form.typeform.com/to/HznlVDLZ"></iframe>
+
+  <div class="profit-calc">
+    <h3>💰 Profit Calculator</h3>
+    <label>Buy Price: $<input type="number" id="buyPrice" /></label><br/>
+    <label>Sell Price: $<input type="number" id="sellPrice" /></label><br/>
+    <button onclick="calcProfit()">Calculate</button>
+    <div id="profitResult"></div>
+  </div>
+
+  <div class="scamcheck">
+    <h3>🛡 ScamCheck™ (Beta)</h3>
+    <p>Copy/paste a marketplace listing or seller message and we’ll analyze the risk.</p>
+    <textarea id="scamInput" rows="5" cols="50" placeholder="Paste offer details here..."></textarea><br/>
+    <button onclick="runScamCheck()">Scan Now</button>
+    <div id="scamResult"></div>
   </div>
 
   <script>
-    // Countdown Timer
-    window.addEventListener('DOMContentLoaded', () => {
-      const deadline = new Date("2025-08-10T23:59:59").getTime();
-      const countdownEl = document.getElementById("countdown");
-      const expiredEl = document.getElementById("expired");
-
-      function updateCountdown() {
-        const now = new Date().getTime();
-        const distance = deadline - now;
-
-        if (distance <= 0) {
-          countdownEl.style.display = "none";
-          expiredEl.style.display = "block";
-          clearInterval(interval);
-          return;
-        }
-
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-        countdownEl.textContent = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    // Countdown logic
+    const countdownDate = new Date("August 15, 2025 23:59:59").getTime();
+    const timer = setInterval(function () {
+      const now = new Date().getTime();
+      const distance = countdownDate - now;
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+      document.getElementById("countdown").innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+      if (distance < 0) {
+        clearInterval(timer);
+        document.getElementById("countdown").innerHTML = "Expired";
       }
+    }, 1000);
 
-      const interval = setInterval(updateCountdown, 1000);
-      updateCountdown();
-    });
-
-    // Profit Calculator Logic
-    function calculateProfit() {
+    // Profit calculator
+    function calcProfit() {
       const buy = parseFloat(document.getElementById("buyPrice").value) || 0;
       const sell = parseFloat(document.getElementById("sellPrice").value) || 0;
-      const fees = parseFloat(document.getElementById("fees").value) || 0;
-      const profit = sell - buy - fees;
+      const profit = sell - buy;
+      document.getElementById("profitResult").innerText = `Projected Profit: $${profit.toFixed(2)}`;
+    }
 
-      document.getElementById("profitResult").textContent = `Estimated Profit: $${profit.toFixed(2)}`;
+    // ScamCheck (rules-based for now)
+    function runScamCheck() {
+      const input = document.getElementById("scamInput").value.toLowerCase();
+      let risk = 0;
+      const redFlags = [
+        { phrase: "zelle only", points: 30 },
+        { phrase: "won't meet", points: 25 },
+        { phrase: "no imei", points: 20 },
+        { phrase: "trust me", points: 15 },
+        { phrase: "paypal gift", points: 25 },
+        { phrase: "shipping only", points: 20 },
+      ];
+      redFlags.forEach(flag => {
+        if (input.includes(flag.phrase)) risk += flag.points;
+      });
+      let level = "✅ Low Risk";
+      if (risk > 70) level = "🚨 High Risk";
+      else if (risk > 40) level = "⚠️ Medium Risk";
+      document.getElementById("scamResult").innerText = `Scam Score: ${risk}/100 — ${level}`;
     }
   </script>
+
 </body>
 </html>
