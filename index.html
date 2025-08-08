@@ -6,52 +6,52 @@
   <title>FlipCheck Early Access</title>
   <style>
     body {
-      background-color: #0a0a0a;
+      background-color: #111;
       color: #fff;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: Arial, sans-serif;
       text-align: center;
       padding: 2rem;
     }
 
     h1, h2 {
-      color: #f9f9f9;
+      margin-bottom: 0.5rem;
     }
 
     .section {
       margin: 2rem 0;
-      padding: 1rem;
+      padding: 1.5rem;
       background: #1a1a1a;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #00ffea50;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
-    input, textarea, button {
-      padding: 0.6rem;
+    input, textarea {
+      padding: 10px;
+      border-radius: 6px;
       border: none;
-      border-radius: 5px;
-      margin-top: 0.5rem;
-      font-size: 1rem;
+      width: 80%;
+      margin-bottom: 10px;
     }
 
     button {
-      background: #00ffea;
+      background-color: #f9d342;
       color: #000;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
       cursor: pointer;
     }
 
-    .scam-score {
-      margin-top: 0.5rem;
-      font-weight: bold;
+    #scamResult.low {
+      color: #00ff99;
     }
 
-    iframe {
-      width: 100%;
-      max-width: 600px;
-      height: 600px;
-      border: none;
-      border-radius: 8px;
+    #scamResult.high {
+      color: #ff4444;
     }
-
   </style>
 </head>
 <body>
@@ -60,76 +60,92 @@
 
   <div class="section">
     <h2>⏳ Time Left to Join:</h2>
-    <p id="countdown">Loading...</p>
-    <script>
-      const countdownEl = document.getElementById('countdown');
-      const futureDate = new Date();
-      futureDate.setDate(futureDate.getDate() + 7); // 7 days from now
-
-      setInterval(() => {
-        const now = new Date();
-        const distance = futureDate - now;
-        const d = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const h = Math.floor((distance / (1000 * 60 * 60)) % 24);
-        const m = Math.floor((distance / 1000 / 60) % 60);
-        const s = Math.floor((distance / 1000) % 60);
-        countdownEl.textContent = `${d}d ${h}h ${m}m ${s}s`;
-      }, 1000);
-    </script>
-  </div>
-
-  <div class="section">
-    <h2>🧠 Ready to Flip Smarter?</h2>
+    <div id="countdown">Loading...</div>
+    <h3>🧠 Ready to Flip Smarter?</h3>
     <p>Fill out the form below and we’ll send you early access.</p>
-    <iframe src="https://form.typeform.com/to/HznlVDLZ" title="FlipCheck Waitlist"></iframe>
+
+    <iframe src="https://form.typeform.com/to/HznlVDLZ"
+      width="100%"
+      height="500"
+      frameborder="0"
+      style="border:none;border-radius:10px;overflow:hidden;"
+      allowfullscreen>
+    </iframe>
   </div>
 
   <div class="section">
     <h2>💰 Profit Calculator</h2>
-    <label>Buy Price: $<input type="number" id="buyPrice" /></label><br/>
-    <label>Sell Price: $<input type="number" id="sellPrice" /></label><br/>
+    <label>Buy Price: $<input type="number" id="buyPrice" /></label><br>
+    <label>Sell Price: $<input type="number" id="sellPrice" /></label><br>
     <button onclick="calculateProfit()">Calculate</button>
-    <div id="profitResult"></div>
-
-    <script>
-      function calculateProfit() {
-        const buy = parseFloat(document.getElementById('buyPrice').value);
-        const sell = parseFloat(document.getElementById('sellPrice').value);
-        const profit = sell - buy;
-        document.getElementById('profitResult').textContent = isNaN(profit) ? 'Enter valid prices.' : `Profit: $${profit}`;
-      }
-    </script>
+    <p id="profitResult">Profit: --</p>
   </div>
 
   <div class="section">
-    <h2>🕵️ ScamCheck™ (Beta)</h2>
-    <p>Copy/paste a seller message or listing and we’ll analyze the risk.</p>
+    <h2>🛡️ ScamCheck™ (Beta)</h2>
+    <p>Copy/paste a marketplace listing or seller message and we’ll analyze the risk.</p>
     <textarea id="scamInput" rows="4" cols="50" placeholder="e.g., brand new iPhone sealed, $150 firm, can meet tonight..."></textarea><br/>
     <button onclick="runScamCheck()">Scan Now</button>
-    <div class="scam-score" id="scamResult">Scam Score: --</div>
-
-    <script>
-      async function runScamCheck() {
-        const text = document.getElementById('scamInput').value.trim();
-        if (!text) return alert('Paste a message first.');
-
-        document.getElementById('scamResult').textContent = 'Analyzing...';
-
-        try {
-          const res = await fetch('/api/scamcheck', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: text })
-          });
-
-          const data = await res.json();
-          document.getElementById('scamResult').textContent =
-            `Scam Score: ${data.score}/100 — ${data.riskLevel}`;
-        } catch (err) {
-          document.getElementById('scamResult').textContent = 'Error analyzing message.';
-        }
-      }
-    </script>
+    <div id="scamResult" class="scam-score">Scam Score: --</div>
   </div>
+
+  <script>
+    // Countdown Timer - 7 days from now
+    const countdown = document.getElementById('countdown');
+    const deadline = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    const updateCountdown = () => {
+      const now = new Date();
+      const diff = deadline - now;
+      if (diff <= 0) {
+        countdown.innerText = '⏰ Time’s up!';
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+      countdown.innerText = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    };
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    // Profit Calculator
+    function calculateProfit() {
+      const buy = parseFloat(document.getElementById('buyPrice').value);
+      const sell = parseFloat(document.getElementById('sellPrice').value);
+      const result = document.getElementById('profitResult');
+      if (isNaN(buy) || isNaN(sell)) {
+        result.textContent = "Please enter valid numbers.";
+        return;
+      }
+      const profit = sell - buy;
+      const margin = ((profit / buy) * 100).toFixed(2);
+      result.textContent = `Profit: $${profit.toFixed(2)} (${margin}% margin)`;
+    }
+
+    // ScamCheck™ Logic
+    async function runScamCheck() {
+      const text = document.getElementById('scamInput').value.trim();
+      const resultEl = document.getElementById('scamResult');
+      resultEl.className = 'scam-score';
+      if (!text) return alert('Paste a message first.');
+
+      resultEl.textContent = 'Analyzing...';
+
+      try {
+        const res = await fetch('/.netlify/functions/scamcheck', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: text })
+        });
+
+        const data = await res.json();
+        resultEl.textContent = `Scam Score: ${data.score}/100 — 🧠 ${data.riskLevel}`;
+        resultEl.classList.add(data.riskLevel === 'Low Risk' ? 'low' : 'high');
+      } catch (err) {
+        resultEl.textContent = 'Error analyzing message.';
+      }
+    }
+  </script>
 </body>
 </html>
